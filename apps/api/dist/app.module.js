@@ -21,6 +21,7 @@ const lead_capture_module_1 = require("./modules/lead-capture/lead-capture.modul
 const pre_approval_module_1 = require("./modules/pre-approval/pre-approval.module");
 const foreclosure_calculator_module_1 = require("./modules/foreclosure-calculator/foreclosure-calculator.module");
 const lead_acquisition_module_1 = require("./modules/lead-acquisition/lead-acquisition.module");
+const opportunity_detection_module_1 = require("./modules/opportunity-detection/opportunity-detection.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -46,6 +47,7 @@ exports.AppModule = AppModule = __decorate([
             pre_approval_module_1.PreApprovalModule,
             foreclosure_calculator_module_1.ForeclosureCalculatorModule,
             lead_acquisition_module_1.LeadAcquisitionModule,
+            opportunity_detection_module_1.OpportunityDetectionModule,
         ],
     })
 ], AppModule);
