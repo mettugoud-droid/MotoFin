@@ -25,8 +25,14 @@ let PrismaService = PrismaService_1 = class PrismaService extends client_1.Prism
         });
     }
     async onModuleInit() {
-        await this.$connect();
-        this.logger.log('Database connection established');
+        try {
+            await this.$connect();
+            this.logger.log('Database connection established');
+        }
+        catch (error) {
+            this.logger.error(`Database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            this.logger.warn('API will start without database. Some features will be unavailable.');
+        }
     }
     async onModuleDestroy() {
         await this.$disconnect();

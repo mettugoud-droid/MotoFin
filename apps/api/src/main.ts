@@ -17,7 +17,7 @@ async function bootstrap(): Promise<void> {
 
   // CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000', /\.vercel\.app$/],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
@@ -55,12 +55,12 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup('api/docs', app, document);
 
   // Start server
-  const port = process.env.API_PORT || 3001;
-  await app.listen(port);
+  const port = process.env.PORT || process.env.API_PORT || 3001;
+  await app.listen(port, '0.0.0.0');
 
-  logger.log(`🚀 MotoFin API running on http://localhost:${port}`);
-  logger.log(`📚 Swagger docs at http://localhost:${port}/api/docs`);
-  logger.log(`💚 Health check at http://localhost:${port}/api/health`);
+  logger.log(`🚀 MotoFin API running on port ${port}`);
+  logger.log(`📚 Swagger docs at /api/docs`);
+  logger.log(`💚 Health check at /api/health`);
 }
 
 bootstrap();
