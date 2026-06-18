@@ -15,6 +15,7 @@ import { ForeclosureCalculatorModule } from './modules/foreclosure-calculator/fo
 import { LeadAcquisitionModule } from './modules/lead-acquisition/lead-acquisition.module';
 import { OpportunityDetectionModule } from './modules/opportunity-detection/opportunity-detection.module';
 import { LeadAssignmentModule } from './modules/lead-assignment/lead-assignment.module';
+import { CrmModule } from './modules/crm/crm.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { LeadAssignmentModule } from './modules/lead-assignment/lead-assignment.
     LeadAcquisitionModule,
     OpportunityDetectionModule,
     LeadAssignmentModule,
+    CrmModule,
   ],
 })
 export class AppModule {}
