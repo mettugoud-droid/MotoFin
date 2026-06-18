@@ -18,6 +18,7 @@ import { LeadAssignmentModule } from './modules/lead-assignment/lead-assignment.
 import { CrmModule } from './modules/crm/crm.module';
 import { DocumentManagementModule } from './modules/document-management/document-management.module';
 import { BankMatchingModule } from './modules/bank-matching/bank-matching.module';
+import { ApplicationModule } from './modules/application/application.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { BankMatchingModule } from './modules/bank-matching/bank-matching.module
     CrmModule,
     DocumentManagementModule,
     BankMatchingModule,
+    ApplicationModule,
   ],
 })
 export class AppModule {}
