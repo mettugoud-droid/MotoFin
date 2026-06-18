@@ -1,0 +1,337 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  FOLLOW_UP
+  DOCS_PENDING
+  DOCS_RECEIVED
+  BANK_SUBMITTED
+  APPROVED
+  DISBURSED
+  REJECTED
+  CLOSED
+  ALL_REJECTED
+}
+
+enum OpportunityCategory {
+  used_car_buyer
+  refinance_opportunity
+  balance_transfer_opportunity
+  top_up_opportunity
+  loan_against_vehicle
+  uncategorized
+}
+
+enum EmploymentType {
+  salaried
+  self_employed
+  business
+}
+
+enum LeadSourceType {
+  meta_lead_ads
+  google_lead_forms
+  landing_page
+  whatsapp_campaign
+  referral_partner
+  dealer_network
+  savings_calculator
+  foreclosure_calculator
+  google_ads
+  website
+}
+
+enum ConfidenceLevel {
+  high
+  moderate
+  subject_to_verification
+}
+
+// =============================================================================
+// MODELS
+// =============================================================================
+
+model Tenant {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @db.VarChar(255)
+  slug      String    @unique @db.VarChar(100)
+  domain    String?   @db.VarChar(255)
+  settings  Json      @default("{}")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  roles                   Role[]
+  users                   User[]
+  leadSources             LeadSource[]
+  leads                   Lead[]
+  banks                   Bank[]
+  bankRules               BankRule[]
+  savingsCalculations     SavingsCalculation[]
+  foreclosureCalculations ForeclosureCalculation[]
+  preApprovalResults      PreApprovalResult[]
+
+  @@map("tenants")
+}
+
+model Role {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  name        String    @db.VarChar(50)
+  permissions Json      @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  users  User[]
+
+  @@unique([tenantId, name], name: "uq_roles_tenant_name")
+  @@map("roles")
+}
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  supabaseUid      String    @unique @map("supabase_uid") @db.VarChar(255)
+  roleId           String    @map("role_id") @db.Uuid
+  email            String    @db.VarChar(255)
+  fullName         String    @map("full_name") @db.VarChar(255)
+  phone            String?   @db.VarChar(20)
+  city             String?   @db.VarChar(100)
+  productExpertise String[]  @default([]) @map("product_expertise")
+  isActive         Boolean   @default(true) @map("is_active")
+  maxActiveLeads   Int       @default(50) @map("max_active_leads")
+  lastAssignmentAt DateTime? @map("last_assignment_at") @db.Timestamptz
+  lastLoginAt      DateTime? @map("last_login_at") @db.Timestamptz
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant        Tenant @relation(fields: [tenantId], references: [id])
+  role          Role   @relation(fields: [roleId], references: [id])
+  assignedLeads Lead[] @relation("AssignedExecutive")
+
+  @@unique([tenantId, email], name: "uq_users_tenant_email")
+  @@index([tenantId, isActive, lastAssignmentAt], map: "idx_users_active_assignment")
+  @@map("users")
+}
+
+model LeadSource {
+  id        String         @id @default(uuid()) @db.Uuid
+  tenantId  String         @map("tenant_id") @db.Uuid
+  name      String         @db.VarChar(100)
+  type      LeadSourceType
+  config    Json           @default("{}")
+  isActive  Boolean        @default(true) @map("is_active")
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime?      @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  leads  Lead[]
+
+  @@unique([tenantId, name], name: "uq_lead_sources_tenant_name")
+  @@index([tenantId, type], map: "idx_lead_sources_tenant_type")
+  @@map("lead_sources")
+}
+
+model Lead {
+  id                  String               @id @default(uuid()) @db.Uuid
+  tenantId            String               @map("tenant_id") @db.Uuid
+  customerMobile      String               @map("customer_mobile") @db.VarChar(10)
+  customerName        String               @map("customer_name") @db.VarChar(255)
+  customerEmail       String?              @map("customer_email") @db.VarChar(255)
+  customerCity        String?              @map("customer_city") @db.VarChar(100)
+  leadSourceId        String               @map("lead_source_id") @db.Uuid
+  assignedTo          String?              @map("assigned_to") @db.Uuid
+  status              LeadStatus           @default(NEW)
+  opportunityCategory OpportunityCategory? @map("opportunity_category")
+  opportunityScore    Int?                 @map("opportunity_score")
+  scoreIsPartial      Boolean              @default(false) @map("score_is_partial")
+  matchedSignals      Json                 @default("[]") @map("matched_signals")
+  existingLoanDetails Json?                @map("existing_loan_details")
+  requestedLoanAmount Decimal?             @map("requested_loan_amount") @db.Decimal(12, 2)
+  sourceTimestamp     DateTime             @map("source_timestamp") @db.Timestamptz
+  assignedAt          DateTime?            @map("assigned_at") @db.Timestamptz
+  lastInteractionAt   DateTime?            @map("last_interaction_at") @db.Timestamptz
+  utmSource           String?              @map("utm_source") @db.VarChar(100)
+  utmMedium           String?              @map("utm_medium") @db.VarChar(100)
+  utmCampaign         String?              @map("utm_campaign") @db.VarChar(200)
+  utmContent          String?              @map("utm_content") @db.VarChar(200)
+  utmTerm             String?              @map("utm_term") @db.VarChar(200)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt           DateTime?            @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  leadSource LeadSource @relation(fields: [leadSourceId], references: [id])
+  assignee   User?      @relation("AssignedExecutive", fields: [assignedTo], references: [id])
+
+  // Reverse relations
+  savingsCalculations     SavingsCalculation[]
+  foreclosureCalculations ForeclosureCalculation[]
+
+  @@index([tenantId, status], map: "idx_leads_tenant_status")
+  @@index([tenantId, assignedTo], map: "idx_leads_assigned_to")
+  @@index([tenantId, customerMobile], map: "idx_leads_customer_mobile")
+  @@index([tenantId, opportunityScore(sort: Desc)], map: "idx_leads_opportunity_score")
+  @@index([tenantId, createdAt(sort: Desc)], map: "idx_leads_created_at")
+  @@index([tenantId, leadSourceId], map: "idx_leads_source_id")
+  @@map("leads")
+}
+
+model Bank {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  name        String    @db.VarChar(100)
+  code        String    @db.VarChar(50)
+  isActive    Boolean   @default(true) @map("is_active")
+  contactInfo Json      @default("{}") @map("contact_info")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  bankRules BankRule[]
+
+  @@unique([tenantId, code], name: "uq_banks_tenant_code")
+  @@unique([tenantId, name], name: "uq_banks_tenant_name")
+  @@index([tenantId, isActive], map: "idx_banks_tenant_active")
+  @@map("banks")
+}
+
+model BankRule {
+  id                      String           @id @default(uuid()) @db.Uuid
+  tenantId                String           @map("tenant_id") @db.Uuid
+  bankId                  String           @map("bank_id") @db.Uuid
+  loanProductCode         String           @map("loan_product_code") @db.VarChar(50)
+  minCreditScore          Int?             @map("min_credit_score")
+  maxVehicleAgeMonths     Int?             @map("max_vehicle_age_months")
+  minMonthlyIncome        Decimal?         @map("min_monthly_income") @db.Decimal(12, 2)
+  acceptedEmploymentTypes EmploymentType[] @default([]) @map("accepted_employment_types")
+  serviceableCities       String[]         @default([]) @map("serviceable_cities")
+  minLoanAmount           Decimal?         @map("min_loan_amount") @db.Decimal(12, 2)
+  maxLoanAmount           Decimal?         @map("max_loan_amount") @db.Decimal(12, 2)
+  interestRateMin         Decimal?         @map("interest_rate_min") @db.Decimal(5, 2)
+  interestRateMax         Decimal?         @map("interest_rate_max") @db.Decimal(5, 2)
+  historicalApprovalRate  Decimal          @default(0) @map("historical_approval_rate") @db.Decimal(5, 2)
+  isActive                Boolean          @default(true) @map("is_active")
+  effectiveFrom           DateTime         @default(now()) @map("effective_from") @db.Timestamptz
+  createdAt               DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt               DateTime         @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt               DateTime?        @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  bank   Bank   @relation(fields: [bankId], references: [id])
+
+  @@unique([tenantId, bankId, loanProductCode], name: "uq_bank_rules_bank_product")
+  @@index([tenantId, isActive], map: "idx_bank_rules_active")
+  @@index([bankId], map: "idx_bank_rules_bank_id")
+  @@map("bank_rules")
+}
+
+model SavingsCalculation {
+  id                  String    @id @default(uuid()) @db.Uuid
+  tenantId            String    @map("tenant_id") @db.Uuid
+  sessionId           String    @map("session_id") @db.VarChar(100)
+  currentEmi          Decimal   @map("current_emi") @db.Decimal(12, 2)
+  outstandingAmount   Decimal   @map("outstanding_amount") @db.Decimal(14, 2)
+  currentRate         Decimal   @map("current_rate") @db.Decimal(5, 2)
+  remainingTenure     Int       @map("remaining_tenure")
+  originalTenure      Int       @map("original_tenure")
+  monthlySaving       Decimal?  @map("monthly_saving") @db.Decimal(12, 2)
+  totalInterestSaving Decimal?  @map("total_interest_saving") @db.Decimal(14, 2)
+  topUpEligible       Boolean?  @map("top_up_eligible")
+  topUpAmount         Decimal?  @map("top_up_amount") @db.Decimal(14, 2)
+  recommendedBank     String?   @map("recommended_bank") @db.VarChar(100)
+  bankComparisons     Json      @default("[]") @map("bank_comparisons")
+  responseTimeMs      Int       @map("response_time_ms")
+  leadCaptured        Boolean   @default(false) @map("lead_captured")
+  leadId              String?   @map("lead_id") @db.Uuid
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  lead   Lead?  @relation(fields: [leadId], references: [id])
+
+  @@index([tenantId, createdAt(sort: Desc)], map: "idx_savings_calc_created")
+  @@index([sessionId], map: "idx_savings_calc_session")
+  @@index([leadId], map: "idx_savings_calc_lead_id")
+  @@map("savings_calculations")
+}
+
+model PreApprovalResult {
+  id                    String          @id @default(uuid()) @db.Uuid
+  tenantId              String          @map("tenant_id") @db.Uuid
+  sourceType            String          @map("source_type") @db.VarChar(50)
+  sourceCalculationId   String          @map("source_calculation_id") @db.Uuid
+  approvalProbability   Decimal         @map("approval_probability") @db.Decimal(5, 2)
+  confidenceLevel       ConfidenceLevel @map("confidence_level")
+  topUpAmount           Decimal?        @map("top_up_amount") @db.Decimal(14, 2)
+  recommendedBanks      Json            @default("[]") @map("recommended_banks")
+  createdAt             DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt             DateTime?       @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt(sort: Desc)], map: "idx_pre_approval_created")
+  @@index([sourceCalculationId], map: "idx_pre_approval_source_calc")
+  @@map("pre_approval_results")
+}
+
+model ForeclosureCalculation {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  sessionId         String    @map("session_id") @db.VarChar(100)
+  currentBank       String    @map("current_bank") @db.VarChar(100)
+  currentEmi        Decimal   @map("current_emi") @db.Decimal(12, 2)
+  loanStartDate     DateTime  @map("loan_start_date") @db.Date
+  outstandingAmount Decimal   @map("outstanding_amount") @db.Decimal(14, 2)
+  currentRate       Decimal   @map("current_rate") @db.Decimal(5, 2)
+  foreclosureAmount Decimal?  @map("foreclosure_amount") @db.Decimal(14, 2)
+  preclosureCharges Decimal?  @map("preclosure_charges") @db.Decimal(12, 2)
+  netSavings        Decimal?  @map("net_savings") @db.Decimal(14, 2)
+  takeoverEligible  Boolean?  @map("takeover_eligible")
+  bestRefinanceBank String?   @map("best_refinance_bank") @db.VarChar(100)
+  responseTimeMs    Int       @map("response_time_ms")
+  leadCaptured      Boolean   @default(false) @map("lead_captured")
+  leadId            String?   @map("lead_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  lead   Lead?  @relation(fields: [leadId], references: [id])
+
+  @@index([tenantId, createdAt(sort: Desc)], map: "idx_fc_created")
+  @@index([sessionId], map: "idx_fc_session")
+  @@index([leadId], map: "idx_fc_lead_id")
+  @@map("foreclosure_calculations")
+}

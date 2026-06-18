@@ -1,0 +1,1 @@
+{"version":3,"file":"calculate-savings.dto.d.ts","sourceRoot":"","sources":["../../../../src/modules/savings-calculator/dto/calculate-savings.dto.ts"],"names":[],"mappings":"AAkBA,qBAAa,mBAAmB;IAK9B,UAAU,EAAG,MAAM,CAAC;IAMpB,iBAAiB,EAAG,MAAM,CAAC;IAM3B,WAAW,EAAG,MAAM,CAAC;IAMrB,eAAe,EAAG,MAAM,CAAC;IASzB,cAAc,EAAG,MAAM,CAAC;IAKxB,cAAc,CAAC,EAAE,MAAM,CAAC;CACzB"}
