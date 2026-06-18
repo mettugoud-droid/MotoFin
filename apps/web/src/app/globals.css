@@ -18,19 +18,47 @@
     @apply border-slate-200;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-surface-page text-brand-primary antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Prevent iOS zoom on inputs */
   input, select, textarea {
     font-size: 16px;
   }
 
-  /* Financial numbers */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Hide scrollbar for carousels */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer components {
+  /* Premium card with subtle hover lift */
+  .premium-card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-card transition-all duration-300;
+  }
+  .premium-card:hover {
+    @apply shadow-card-hover border-slate-200 -translate-y-0.5;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+  }
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-20 md:py-28 px-4;
   }
 }
 

@@ -118,10 +118,10 @@ export function CalculatorSection() {
   };
 
   return (
-    <section id="calculator" className="relative -mt-16 md:-mt-20 px-4 pb-12">
+    <section id="calculator" className="relative -mt-16 md:-mt-20 px-4 pb-16">
       <div className="max-w-xl mx-auto">
         {/* Main Card */}
-        <div className="bg-white rounded-2xl shadow-card-xl border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-card-xl border border-slate-100 overflow-hidden backdrop-blur-sm">
           {/* Progress Bar */}
           <div className="px-6 pt-6">
             <ProgressBar
@@ -140,8 +140,9 @@ export function CalculatorSection() {
 
           {/* Step 1: Calculator */}
           {step === 'calculator' && (
-            <div className="p-6 animate-fade-in-up">
-              <h2 className="text-xl font-bold text-slate-800 mb-6">EMI Savings Calculator</h2>
+            <div className="p-6 md:p-8 animate-fade-in-up">
+              <h2 className="text-xl font-bold text-slate-800 mb-1">EMI Savings Calculator</h2>
+              <p className="text-sm text-slate-500 mb-6">Enter your current loan details to see savings</p>
               <form onSubmit={calcForm.handleSubmit(handleCalculate)} className="space-y-5" onFocus={onFirstFocus}>
                 <FormField
                   label="Current Monthly EMI"

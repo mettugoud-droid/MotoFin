@@ -34,19 +34,29 @@ const config: Config = {
         'cta-hover': '0 6px 20px rgba(34, 197, 94, 0.4)',
       },
       animation: {
-        'fade-in-up': 'fadeInUp 0.4s ease-out',
-        'fade-in': 'fadeIn 0.3s ease-out',
+        'fade-in-up': 'fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'fade-in': 'fadeIn 0.4s ease-out forwards',
         'shimmer': 'shimmer 1.5s infinite linear',
         'pulse-ring': 'pulseRing 2s infinite',
+        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
         fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.9)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
@@ -54,7 +64,7 @@ const config: Config = {
         },
         pulseRing: {
           '0%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.4)' },
-          '70%': { boxShadow: '0 0 0 10px rgba(34, 197, 94, 0)' },
+          '70%': { boxShadow: '0 0 0 12px rgba(34, 197, 94, 0)' },
           '100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0)' },
         },
       },
