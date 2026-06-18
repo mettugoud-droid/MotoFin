@@ -177,102 +177,131 @@ export function CalculatorSection() {
           {/* Loading */}
           {step === 'results' && isLoading && <ResultsSkeleton />}
 
-          {/* Step 2: Results */}
+          {/* Step 2: Results — Conversion-Focused Redesign */}
           {step === 'results' && !isLoading && savings && (
-            <div className="p-6 animate-fade-in-up">
-              <h2 className="text-xl font-bold text-slate-800 mb-6">Your Savings Estimate</h2>
-
+            <div className="animate-fade-in-up">
               {savings.isRateCompetitive ? (
-                <div className="bg-green-50 border border-green-200 p-5 rounded-xl mb-6">
-                  <p className="text-green-800 font-medium">{savings.competitiveMessage}</p>
+                <div className="p-6">
+                  <div className="bg-green-50 border border-green-200 p-5 rounded-xl mb-6">
+                    <p className="text-green-800 font-medium">{savings.competitiveMessage}</p>
+                  </div>
+                  <Button fullWidth onClick={() => setStep('lead-capture')}>
+                    Check Top-Up Eligibility <ArrowRight size={18} />
+                  </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl text-center">
-                    <p className="text-xs font-medium text-green-600 mb-1">Monthly Saving</p>
-                    <AnimatedCounter value={savings.monthlySaving} className="text-2xl text-green-700" />
-                  </div>
-                  <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-center">
-                    <p className="text-xs font-medium text-blue-600 mb-1">Total Interest Saved</p>
-                    <AnimatedCounter value={savings.totalInterestSaving} className="text-2xl text-blue-700" />
-                  </div>
-                </div>
-              )}
-
-              {savings.topUpEligible && savings.topUpAmount && (
-                <div className="bg-purple-50 border border-purple-200 p-4 rounded-xl mb-6">
-                  <p className="text-purple-800 font-medium text-sm">
-                    ✓ Top-Up Eligible: <AnimatedCounter value={savings.topUpAmount} className="text-base" />
-                  </p>
-                </div>
-              )}
-
-              {/* Bank Comparison */}
-              <h3 className="font-semibold text-slate-700 mb-3 text-sm">Best Bank Offers</h3>
-              <div className="space-y-2.5 mb-6">
-                {savings.bankComparisons.map((bank, i) => (
-                  <div
-                    key={bank.bankName}
-                    className={`flex items-center justify-between p-3.5 rounded-xl ${
-                      i === 0
-                        ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200'
-                        : 'bg-slate-50 border border-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center">
-                        <Building2 size={16} className="text-slate-500" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-slate-800 text-sm">
-                          {i === 0 && <span className="text-amber-600 mr-1">★</span>}
-                          {bank.bankName}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          {bank.offeredRate}% · EMI ₹{bank.estimatedEmi.toLocaleString('en-IN')}
-                        </p>
-                      </div>
+                <>
+                  {/* Hero-style Savings Display */}
+                  <div className="bg-gradient-to-br from-green-600 to-emerald-700 text-white p-6 md:p-8 text-center">
+                    <p className="text-green-100 text-sm font-medium mb-1">🎉 You Could Save</p>
+                    <div className="my-2">
+                      <AnimatedCounter
+                        value={savings.monthlySaving}
+                        className="text-4xl md:text-5xl text-white"
+                      />
                     </div>
-                    <div className="text-right">
-                      <p className="text-green-600 font-bold text-sm tabular-nums">
-                        ₹{bank.monthlySaving.toLocaleString('en-IN')}
-                      </p>
-                      <p className="text-xs text-slate-400">saved/mo</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pre-Approval */}
-              {preApproval && (
-                <div className="border-t border-slate-100 pt-6 mb-6">
-                  <h3 className="font-semibold text-slate-700 mb-4 text-sm">Pre-Approval Indication</h3>
-                  <div className="flex flex-col items-center">
-                    <ApprovalGauge
-                      probability={preApproval.approvalProbability}
-                      confidenceLevel={preApproval.confidenceLevel}
-                      size={120}
-                    />
-                    <p className="text-xs text-slate-500 mt-3 text-center max-w-xs">
-                      {preApproval.confidenceMessage}
+                    <p className="text-green-100 font-semibold tracking-wide uppercase text-sm">
+                      Every Month
                     </p>
-                    {preApproval.recommendedBanks.length > 0 && (
-                      <div className="flex gap-2 flex-wrap justify-center mt-3">
-                        {preApproval.recommendedBanks.map((bank) => (
-                          <span key={bank.bankName} className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full text-xs font-medium">
-                            {bank.bankName} ({bank.offeredRate}%)
-                          </span>
-                        ))}
+                  </div>
+
+                  {/* Secondary Metrics */}
+                  <div className="p-6">
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                      <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-center">
+                        <p className="text-[11px] font-medium text-blue-500 uppercase tracking-wide mb-1">
+                          Potential Lifetime Saving
+                        </p>
+                        <AnimatedCounter value={savings.totalInterestSaving} className="text-xl text-blue-700" />
+                      </div>
+                      {savings.topUpEligible && savings.topUpAmount ? (
+                        <div className="bg-purple-50 border border-purple-100 p-4 rounded-xl text-center">
+                          <p className="text-[11px] font-medium text-purple-500 uppercase tracking-wide mb-1">
+                            Top-Up Eligibility
+                          </p>
+                          <AnimatedCounter value={savings.topUpAmount} className="text-xl text-purple-700" />
+                        </div>
+                      ) : (
+                        <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-center">
+                          <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide mb-1">
+                            Yearly Saving
+                          </p>
+                          <AnimatedCounter value={savings.monthlySaving * 12} className="text-xl text-slate-700" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bank Comparison */}
+                    <h3 className="font-semibold text-slate-700 mb-3 text-sm">Best Bank Offers</h3>
+                    <div className="space-y-2.5 mb-6">
+                      {savings.bankComparisons.map((bank, i) => (
+                        <div
+                          key={bank.bankName}
+                          className={`flex items-center justify-between p-3.5 rounded-xl transition-all duration-200 ${
+                            i === 0
+                              ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 shadow-sm'
+                              : 'bg-slate-50 border border-slate-100 hover:border-slate-200'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center shadow-sm">
+                              <Building2 size={16} className="text-slate-500" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-800 text-sm">
+                                {i === 0 && <span className="text-amber-600 mr-1">★</span>}
+                                {bank.bankName}
+                              </p>
+                              <p className="text-xs text-slate-500">
+                                {bank.offeredRate}% · EMI ₹{bank.estimatedEmi.toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-green-600 font-bold text-sm tabular-nums">
+                              ₹{bank.monthlySaving.toLocaleString('en-IN')}
+                            </p>
+                            <p className="text-xs text-slate-400">saved/mo</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Pre-Approval — Enhanced Gauge (Task 3) */}
+                    {preApproval && (
+                      <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-xl p-5 mb-6">
+                        <h3 className="font-semibold text-slate-800 mb-4 text-center text-sm">
+                          Approval Probability
+                        </h3>
+                        <div className="flex flex-col items-center">
+                          <ApprovalGauge
+                            probability={preApproval.approvalProbability}
+                            confidenceLevel={preApproval.confidenceLevel}
+                            size={140}
+                          />
+                          <p className="text-sm text-slate-600 mt-4 text-center font-medium max-w-xs">
+                            {preApproval.confidenceMessage}
+                          </p>
+                          {preApproval.recommendedBanks.length > 0 && (
+                            <div className="flex gap-2 flex-wrap justify-center mt-3">
+                              {preApproval.recommendedBanks.map((bank) => (
+                                <span key={bank.bankName} className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-blue-100">
+                                  {bank.bankName} ({bank.offeredRate}%)
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <p className="text-[10px] text-slate-400 mt-4 text-center">{preApproval.disclaimer}</p>
+                        </div>
                       </div>
                     )}
-                    <p className="text-[10px] text-slate-400 mt-3 text-center">{preApproval.disclaimer}</p>
-                  </div>
-                </div>
-              )}
 
-              <Button fullWidth onClick={() => setStep('lead-capture')}>
-                Get Free Callback <ArrowRight size={18} />
-              </Button>
+                    <Button fullWidth onClick={() => setStep('lead-capture')}>
+                      Get Free Callback <ArrowRight size={18} />
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
@@ -286,17 +315,43 @@ export function CalculatorSection() {
                 <ArrowLeft size={14} /> Back
               </button>
               <h2 className="text-xl font-bold text-slate-800 mb-1">Get Your Free Savings Report</h2>
-              <p className="text-sm text-slate-500 mb-6">
+              <p className="text-sm text-slate-500 mb-4">
                 A specialist will call within 30 minutes.
               </p>
 
               {savings && !savings.isRateCompetitive && (
-                <div className="bg-green-50 border border-green-100 p-3 rounded-lg mb-5 text-center">
+                <div className="bg-green-50 border border-green-100 p-3 rounded-lg mb-4 text-center">
                   <p className="text-green-700 text-sm font-medium">
                     💰 You could save ₹{savings.monthlySaving.toLocaleString('en-IN')}/month
                   </p>
                 </div>
               )}
+
+              {/* Callback Trust Section (Task 4) */}
+              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-5">
+                <div className="grid grid-cols-1 gap-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle size={15} className="text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-slate-700">Free Eligibility Check</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle size={15} className="text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-slate-700">No Impact on Credit Score</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle size={15} className="text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-slate-700">Multiple Bank Comparison</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle size={15} className="text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-slate-700">Loan Specialist Calls Within 30 Minutes</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle size={15} className="text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-slate-700">No Obligation</span>
+                  </div>
+                </div>
+              </div>
 
               <form onSubmit={leadForm.handleSubmit(handleLeadSubmit)} className="space-y-4">
                 <FormField

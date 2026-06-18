@@ -1,8 +1,10 @@
 import { Hero } from '@/components/sections/Hero';
+import { BankTrustStrip } from '@/components/sections/BankTrustStrip';
 import { TrustBar } from '@/components/sections/TrustBar';
 import { CalculatorSection } from '@/components/calculator/CalculatorSection';
 import { Benefits } from '@/components/sections/Benefits';
 import { HowItWorks } from '@/components/sections/HowItWorks';
+import { WhyMotoFin } from '@/components/sections/WhyMotoFin';
 import { FAQ } from '@/components/sections/FAQ';
 import { FinalCTA } from '@/components/sections/FinalCTA';
 
@@ -10,10 +12,12 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustBar />
+      <BankTrustStrip />
       <CalculatorSection />
+      <TrustBar />
       <Benefits />
       <HowItWorks />
+      <WhyMotoFin />
       <FAQ />
       <FinalCTA />
 
