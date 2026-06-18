@@ -16,6 +16,7 @@ import { LeadAcquisitionModule } from './modules/lead-acquisition/lead-acquisiti
 import { OpportunityDetectionModule } from './modules/opportunity-detection/opportunity-detection.module';
 import { LeadAssignmentModule } from './modules/lead-assignment/lead-assignment.module';
 import { CrmModule } from './modules/crm/crm.module';
+import { DocumentManagementModule } from './modules/document-management/document-management.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CrmModule } from './modules/crm/crm.module';
     OpportunityDetectionModule,
     LeadAssignmentModule,
     CrmModule,
+    DocumentManagementModule,
   ],
 })
 export class AppModule {}

@@ -24,6 +24,7 @@ const lead_acquisition_module_1 = require("./modules/lead-acquisition/lead-acqui
 const opportunity_detection_module_1 = require("./modules/opportunity-detection/opportunity-detection.module");
 const lead_assignment_module_1 = require("./modules/lead-assignment/lead-assignment.module");
 const crm_module_1 = require("./modules/crm/crm.module");
+const document_management_module_1 = require("./modules/document-management/document-management.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -52,6 +53,7 @@ exports.AppModule = AppModule = __decorate([
             opportunity_detection_module_1.OpportunityDetectionModule,
             lead_assignment_module_1.LeadAssignmentModule,
             crm_module_1.CrmModule,
+            document_management_module_1.DocumentManagementModule,
         ],
     })
 ], AppModule);
