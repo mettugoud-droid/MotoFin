@@ -1,9 +1,10 @@
 import { Hero } from '@/components/sections/Hero';
 import { BankTrustStrip } from '@/components/sections/BankTrustStrip';
-import { TrustBar } from '@/components/sections/TrustBar';
 import { CalculatorSection } from '@/components/calculator/CalculatorSection';
+import { SavingsInfographic } from '@/components/sections/SavingsInfographic';
 import { Benefits } from '@/components/sections/Benefits';
 import { HowItWorks } from '@/components/sections/HowItWorks';
+import { Testimonials } from '@/components/sections/Testimonials';
 import { WhyMotoFin } from '@/components/sections/WhyMotoFin';
 import { FAQ } from '@/components/sections/FAQ';
 import { FinalCTA } from '@/components/sections/FinalCTA';
@@ -14,14 +15,15 @@ export default function HomePage() {
       <Hero />
       <BankTrustStrip />
       <CalculatorSection />
-      <TrustBar />
+      <SavingsInfographic />
       <Benefits />
       <HowItWorks />
+      <Testimonials />
       <WhyMotoFin />
       <FAQ />
       <FinalCTA />
 
-      {/* Organization Schema */}
+      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

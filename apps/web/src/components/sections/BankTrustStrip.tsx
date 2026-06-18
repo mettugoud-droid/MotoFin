@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { CheckCircle, Lock, ShieldCheck, Phone, CreditCard } from 'lucide-react';
 
 const banks = [
-  { name: 'HDFC Bank', short: 'HDFC' },
-  { name: 'ICICI Bank', short: 'ICICI' },
-  { name: 'Axis Bank', short: 'Axis' },
-  { name: 'Kotak Mahindra Bank', short: 'Kotak' },
-  { name: 'IndusInd Bank', short: 'IndusInd' },
-  { name: 'AU Small Finance Bank', short: 'AU Finance' },
+  { name: 'HDFC Bank', short: 'HDFC', color: '#004C8F', bg: '#E8F4FD' },
+  { name: 'ICICI Bank', short: 'ICICI', color: '#F58220', bg: '#FFF3E8' },
+  { name: 'Axis Bank', short: 'Axis', color: '#97144D', bg: '#F9E8F0' },
+  { name: 'Kotak Mahindra', short: 'Kotak', color: '#ED1C24', bg: '#FDE8E8' },
+  { name: 'IndusInd Bank', short: 'IndusInd', color: '#5C2D91', bg: '#F0E8F9' },
+  { name: 'AU Finance', short: 'AU', color: '#FF6B00', bg: '#FFF0E5' },
 ];
 
 const trustPoints = [
@@ -33,60 +33,81 @@ export function BankTrustStrip() {
   }, []);
 
   return (
-    <section ref={ref} className="bg-white py-8 md:py-10 px-4 border-b border-slate-100">
+    <section ref={ref} className="bg-white py-10 md:py-12 px-4 border-b border-slate-100">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-5">
+        <h2 className="text-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-6">
           Trusted Refinance Assessment Across Leading Banks
         </h2>
 
-        {/* Desktop bank row */}
-        <div className="hidden md:flex items-center justify-center gap-5 lg:gap-8">
+        {/* Bank Logos - Desktop */}
+        <div className="hidden md:grid grid-cols-6 gap-4">
           {banks.map((bank, i) => (
             <div
               key={bank.name}
-              className={`group flex items-center px-4 py-2.5 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-slate-200 hover:shadow-card transition-all duration-300 ${
+              className={`group relative flex flex-col items-center justify-center p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:shadow-card-hover transition-all duration-300 cursor-default ${
                 isVisible ? 'animate-fade-in-up' : 'opacity-0'
               }`}
-              style={{ animationDelay: `${i * 70}ms`, animationFillMode: 'forwards' }}
+              style={{ animationDelay: `${i * 80}ms`, animationFillMode: 'forwards' }}
             >
-              <div className="w-7 h-7 rounded-md bg-slate-200 group-hover:bg-blue-100 flex items-center justify-center mr-2 transition-colors duration-300">
-                <span className="text-xs font-bold text-slate-500 group-hover:text-blue-700 transition-colors duration-300">
-                  {bank.short.charAt(0)}
+              {/* SVG Bank Logo */}
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 group-hover:scale-110"
+                style={{ backgroundColor: bank.bg }}
+              >
+                <span className="text-sm font-black" style={{ color: bank.color }}>
+                  {bank.short.substring(0, 2)}
                 </span>
               </div>
-              <span className="text-sm font-medium text-slate-400 group-hover:text-slate-800 transition-colors duration-300 whitespace-nowrap">
-                {bank.short}
+              <span className="text-xs font-medium text-slate-500 group-hover:text-slate-800 transition-colors text-center">
+                {bank.name}
               </span>
+              {/* Hover rate tooltip */}
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                From 8.5% p.a.
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Mobile carousel */}
+        {/* Bank Logos - Mobile Carousel */}
         <div className="md:hidden overflow-x-auto -mx-4 px-4" style={{ scrollbarWidth: 'none' }}>
-          <div className="flex gap-3 min-w-max pb-1">
+          <div className="flex gap-3 min-w-max pb-2">
             {banks.map((bank, i) => (
               <div
                 key={bank.name}
-                className={`flex items-center px-3.5 py-2.5 rounded-lg border border-slate-100 bg-slate-50/50 flex-shrink-0 ${
+                className={`flex flex-col items-center px-4 py-3 rounded-xl border border-slate-100 flex-shrink-0 min-w-[90px] ${
                   isVisible ? 'animate-fade-in-up' : 'opacity-0'
                 }`}
                 style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'forwards' }}
               >
-                <div className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center mr-2">
-                  <span className="text-[10px] font-bold text-slate-500">{bank.short.charAt(0)}</span>
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center mb-1.5"
+                  style={{ backgroundColor: bank.bg }}
+                >
+                  <span className="text-xs font-black" style={{ color: bank.color }}>
+                    {bank.short.substring(0, 2)}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-slate-600 whitespace-nowrap">{bank.short}</span>
+                <span className="text-[11px] font-medium text-slate-600">{bank.short}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Trust points */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-100">
-          {trustPoints.map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-2">
-              <Icon size={14} className="text-green-500 flex-shrink-0" />
-              <span className="text-xs font-medium text-slate-600">{text}</span>
+        {/* Trust Points */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-8 pt-6 border-t border-slate-100">
+          {trustPoints.map(({ icon: Icon, text }, i) => (
+            <div
+              key={text}
+              className={`flex items-center gap-2.5 p-3 rounded-lg bg-green-50/50 border border-green-100/50 ${
+                isVisible ? 'animate-fade-in-up' : 'opacity-0'
+              }`}
+              style={{ animationDelay: `${(i + 6) * 80}ms`, animationFillMode: 'forwards' }}
+            >
+              <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <Icon size={13} className="text-green-600" />
+              </div>
+              <span className="text-xs font-medium text-slate-700 leading-tight">{text}</span>
             </div>
           ))}
         </div>
