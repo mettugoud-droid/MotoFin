@@ -11,6 +11,7 @@ import { NotificationModule } from './modules/notifications/notification.module'
 import { SavingsCalculatorModule } from './modules/savings-calculator/savings-calculator.module';
 import { LeadCaptureModule } from './modules/lead-capture/lead-capture.module';
 import { PreApprovalModule } from './modules/pre-approval/pre-approval.module';
+import { ForeclosureCalculatorModule } from './modules/foreclosure-calculator/foreclosure-calculator.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PreApprovalModule } from './modules/pre-approval/pre-approval.module';
     SavingsCalculatorModule,
     LeadCaptureModule,
     PreApprovalModule,
+    ForeclosureCalculatorModule,
   ],
 })
 export class AppModule {}

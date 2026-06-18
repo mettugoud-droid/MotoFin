@@ -19,6 +19,7 @@ const notification_module_1 = require("./modules/notifications/notification.modu
 const savings_calculator_module_1 = require("./modules/savings-calculator/savings-calculator.module");
 const lead_capture_module_1 = require("./modules/lead-capture/lead-capture.module");
 const pre_approval_module_1 = require("./modules/pre-approval/pre-approval.module");
+const foreclosure_calculator_module_1 = require("./modules/foreclosure-calculator/foreclosure-calculator.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -42,6 +43,7 @@ exports.AppModule = AppModule = __decorate([
             savings_calculator_module_1.SavingsCalculatorModule,
             lead_capture_module_1.LeadCaptureModule,
             pre_approval_module_1.PreApprovalModule,
+            foreclosure_calculator_module_1.ForeclosureCalculatorModule,
         ],
     })
 ], AppModule);
