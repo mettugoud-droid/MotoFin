@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, ArrowLeft, Lock, Building2, CheckCircle } from 'lucide-react';
@@ -13,6 +13,7 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { ApprovalGauge } from '@/components/ui/ApprovalGauge';
 import { ResultsSkeleton } from '@/components/ui/Skeleton';
+import { analytics } from '@/lib/analytics';
 
 type Step = 'calculator' | 'results' | 'lead-capture' | 'success';
 
@@ -30,6 +31,14 @@ export function CalculatorSection() {
   const [sessionId, setSessionId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [calcStarted, setCalcStarted] = useState(false);
+
+  const onFirstFocus = () => {
+    if (!calcStarted) {
+      setCalcStarted(true);
+      analytics.calculatorStarted();
+    }
+  };
 
   const calcForm = useForm<CalculatorFormData>({
     resolver: zodResolver(calculatorSchema),
@@ -54,10 +63,20 @@ export function CalculatorSection() {
       setSavings(response.data);
       setSessionId((response.meta as { calculationId?: string }).calculationId || '');
 
+      analytics.calculatorCompleted(
+        response.data.monthlySaving,
+        response.data.totalInterestSaving,
+        response.data.topUpEligible
+      );
+
       try {
         const sid = (response.meta as { calculationId?: string }).calculationId || '';
         const preApprovalResponse = await apiPost<PreApprovalResult>('/v1/calculator/pre-approval', { sessionId: sid });
         setPreApproval(preApprovalResponse.data);
+        analytics.preapprovalViewed(
+          preApprovalResponse.data.approvalProbability,
+          preApprovalResponse.data.confidenceLevel
+        );
       } catch { /* Pre-approval is optional */ }
 
       setStep('results');
@@ -80,6 +99,7 @@ export function CalculatorSection() {
         city: data.city,
         currentBank: data.currentBank || undefined,
       });
+      analytics.leadSubmitted(data.city, !!data.currentBank, savings?.monthlySaving || 0);
       setStep('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Submission failed. Please try again.');
@@ -122,7 +142,7 @@ export function CalculatorSection() {
           {step === 'calculator' && (
             <div className="p-6 animate-fade-in-up">
               <h2 className="text-xl font-bold text-slate-800 mb-6">EMI Savings Calculator</h2>
-              <form onSubmit={calcForm.handleSubmit(handleCalculate)} className="space-y-5">
+              <form onSubmit={calcForm.handleSubmit(handleCalculate)} className="space-y-5" onFocus={onFirstFocus}>
                 <FormField
                   label="Current Monthly EMI"
                   prefix="₹"
@@ -296,7 +316,7 @@ export function CalculatorSection() {
                       </div>
                     )}
 
-                    <Button fullWidth onClick={() => setStep('lead-capture')}>
+                    <Button fullWidth onClick={() => { analytics.leadFormOpened(savings.monthlySaving); setStep('lead-capture'); }}>
                       Get Free Callback <ArrowRight size={18} />
                     </Button>
                   </div>
@@ -398,6 +418,7 @@ export function CalculatorSection() {
           {/* Step 4: Success */}
           {step === 'success' && (
             <div className="p-6 text-center animate-fade-in-up">
+              <SuccessTracker />
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={32} className="text-green-600" />
               </div>
@@ -471,3 +492,8 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
   }
 );
 FormField.displayName = 'FormField';
+
+function SuccessTracker() {
+  useEffect(() => { analytics.successPageViewed(); }, []);
+  return null;
+}
