@@ -12,6 +12,7 @@ import { SavingsCalculatorModule } from './modules/savings-calculator/savings-ca
 import { LeadCaptureModule } from './modules/lead-capture/lead-capture.module';
 import { PreApprovalModule } from './modules/pre-approval/pre-approval.module';
 import { ForeclosureCalculatorModule } from './modules/foreclosure-calculator/foreclosure-calculator.module';
+import { LeadAcquisitionModule } from './modules/lead-acquisition/lead-acquisition.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ForeclosureCalculatorModule } from './modules/foreclosure-calculator/fo
     LeadCaptureModule,
     PreApprovalModule,
     ForeclosureCalculatorModule,
+    LeadAcquisitionModule,
   ],
 })
 export class AppModule {}
