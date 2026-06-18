@@ -14,6 +14,7 @@ import { PreApprovalModule } from './modules/pre-approval/pre-approval.module';
 import { ForeclosureCalculatorModule } from './modules/foreclosure-calculator/foreclosure-calculator.module';
 import { LeadAcquisitionModule } from './modules/lead-acquisition/lead-acquisition.module';
 import { OpportunityDetectionModule } from './modules/opportunity-detection/opportunity-detection.module';
+import { LeadAssignmentModule } from './modules/lead-assignment/lead-assignment.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OpportunityDetectionModule } from './modules/opportunity-detection/oppo
     ForeclosureCalculatorModule,
     LeadAcquisitionModule,
     OpportunityDetectionModule,
+    LeadAssignmentModule,
   ],
 })
 export class AppModule {}
