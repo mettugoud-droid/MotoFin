@@ -3,29 +3,95 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+  * {
+    @apply border-surface-border;
+  }
+
+  body {
+    @apply bg-surface-offWhite text-brand-primary font-sans antialiased;
+  }
+
+  /* Tabular numerals for financial values */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-@layer base {
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground; }
+@layer components {
+  /* Skip to main content link - visually hidden until focused */
+  .skip-link {
+    @apply absolute -top-full left-4 z-[100] bg-brand-primary text-white px-4 py-2 rounded-b-lg;
+    @apply focus:top-0 transition-all duration-200;
+  }
+
+  /* Card component base */
+  .card {
+    @apply bg-surface-card rounded-2xl shadow-sm border border-surface-border;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-section-y lg:py-section-y-lg;
+  }
+
+  /* Container */
+  .container-app {
+    @apply max-w-[1280px] mx-auto px-4 md:px-6 lg:px-8;
+  }
+
+  /* Input base styles */
+  .input-base {
+    @apply w-full px-4 py-3 min-h-[44px] border border-surface-border rounded-xl;
+    @apply bg-surface-white text-brand-primary placeholder:text-brand-muted;
+    @apply transition-shadow duration-150 outline-none;
+    @apply focus:ring-2 focus:ring-accent-success/50 focus:border-accent-success;
+  }
+
+  .input-error {
+    @apply border-feedback-error focus:ring-feedback-error/50 focus:border-feedback-error;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center font-semibold rounded-xl;
+    @apply min-h-[44px] px-6 transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    @apply active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply btn bg-accent-success text-white;
+    @apply hover:bg-accent-successDark hover:shadow-lg hover:scale-[1.02];
+    @apply focus:ring-accent-success/50;
+  }
+
+  .btn-secondary {
+    @apply btn bg-highlight-blue text-white;
+    @apply hover:bg-highlight-blueDark hover:shadow-lg hover:scale-[1.02];
+    @apply focus:ring-highlight-blue/50;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-brand-secondary;
+    @apply hover:bg-surface-offWhite hover:text-brand-primary;
+    @apply focus:ring-brand-primary/20;
+  }
+
+  .btn-sm {
+    @apply text-sm min-h-[36px] px-4;
+  }
+
+  .btn-lg {
+    @apply text-lg min-h-[52px] px-8;
+  }
+}
+
+@layer utilities {
+  /* Skeleton shimmer gradient */
+  .skeleton {
+    @apply bg-gradient-to-r from-surface-offWhite via-surface-border to-surface-offWhite;
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-lg;
+  }
 }
